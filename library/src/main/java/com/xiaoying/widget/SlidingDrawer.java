@@ -38,41 +38,41 @@ import com.xiaoying.slidingdrawer.R;
 /**
  * SlidingDrawer hides content out of the screen and allows the user to drag a handle
  * to bring the content on screen. SlidingDrawer can be used vertically or horizontally.
- * <p>
+ * <p/>
  * A special widget composed of two children views: the handle, that the users drags,
  * and the content, attached to the handle and dragged with it.
- * <p>
+ * <p/>
  * SlidingDrawer should be used as an overlay inside layouts. This means SlidingDrawer
  * should only be used inside of a FrameLayout or a RelativeLayout for instance. The
  * size of the SlidingDrawer defines how much space the content will occupy once slid
  * out so SlidingDrawer should usually use match_parent for both its dimensions.
- * <p>
+ * <p/>
  * Inside an XML layout, SlidingDrawer must define the id of the handle and of the
  * content:
- * <p>
+ * <p/>
  * <pre class="prettyprint">
  * ......
  * xmlns:sliding="http://schemas.android.com/apk/res-auto"
  * ......
- * <p>
+ * <p/>
  * &lt;com.xiaoying.widget.SlidingDrawer
  * android:id="@+id/drawer"
  * android:layout_width="match_parent"
  * android:layout_height="match_parent"
- * <p>
+ * <p/>
  * sliding:handle="@+id/handle"
  * sliding:content="@+id/content"&gt;
- * <p>
+ * <p/>
  * &lt;ImageView
  * android:id="@id/handle"
  * android:layout_width="88dip"
  * android:layout_height="44dip" /&gt;
- * <p>
+ * <p/>
  * &lt;GridView
  * android:id="@id/content"
  * android:layout_width="match_parent"
  * android:layout_height="match_parent" /&gt;
- * <p>
+ * <p/>
  * &lt;/com.xiaoying.widget.SlidingDrawer&gt;
  * </pre>
  *
@@ -91,10 +91,6 @@ public class SlidingDrawer extends ViewGroup {
     public static final int GRAVITY_LEFT = 2;
     public static final int GRAVITY_TOP = 3;
 
-    public static final int ORIENTATION_RTL = 0;
-    public static final int ORIENTATION_BTT = 1;
-    public static final int ORIENTATION_LTR = 2;
-    public static final int ORIENTATION_TTB = 3;
 
     private static final int TAP_THRESHOLD = 6;
     private static final float MAXIMUM_TAP_VELOCITY = 100.0f;
@@ -121,9 +117,8 @@ public class SlidingDrawer extends ViewGroup {
 
     private VelocityTracker mVelocityTracker;
 
-//    private boolean mInvert;
-//    private boolean mVertical;
-    private int mGravity;
+    private boolean mInvert;
+    private boolean mVertical;
     private boolean mExpanded;
     private int mBottomOffset;
     private int mTopOffset;
@@ -213,9 +208,8 @@ public class SlidingDrawer extends ViewGroup {
         super(context, attrs, defStyle);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SlidingDrawer, defStyle, 0);
 
-        int orientation = a.getInt(R.styleable.SlidingDrawer_orientation, ORIENTATION_BTT);
-        mGravity = a.getInt(R.styleable.SlidingDrawer_gravity, GRAVITY_TOP);
-//        mVertical = (orientation == ORIENTATION_BTT || orientation == ORIENTATION_TTB);
+        int gravity = a.getInt(R.styleable.SlidingDrawer_gravity, GRAVITY_TOP);
+        mVertical = (GRAVITY_BOTTOM == gravity|| GRAVITY_TOP == gravity);
         mBottomOffset = (int) a.getDimension(R.styleable.SlidingDrawer_bottomOffset, 0.0f);
         mTopOffset = (int) a.getDimension(R.styleable.SlidingDrawer_topOffset, 0.0f);
         mAllowSingleTap = a.getBoolean(R.styleable.SlidingDrawer_allowSingleTap, true);
@@ -249,12 +243,7 @@ public class SlidingDrawer extends ViewGroup {
         mMaximumAcceleration = (int) (MAXIMUM_ACCELERATION * density + 0.5f);
         mVelocityUnits = (int) (VELOCITY_UNITS * density + 0.5f);
 
-//        if (mInvert) {
-//            mMaximumAcceleration = -mMaximumAcceleration;
-//            mMaximumMajorVelocity = -mMaximumMajorVelocity;
-//            mMaximumMinorVelocity = -mMaximumMinorVelocity;
-//        }
-        if (GRAVITY_TOP == mGravity || GRAVITY_LEFT == mGravity) {
+        if (mInvert) {
             mMaximumAcceleration = -mMaximumAcceleration;
             mMaximumMajorVelocity = -mMaximumMajorVelocity;
             mMaximumMinorVelocity = -mMaximumMinorVelocity;
@@ -296,27 +285,13 @@ public class SlidingDrawer extends ViewGroup {
         final View handle = mHandle;
         measureChild(handle, widthMeasureSpec, heightMeasureSpec);
 
-        switch (mGravity) {
-            case GRAVITY_BOTTOM:
-            case GRAVITY_TOP:
-                int height = heightSpecSize - handle.getMeasuredHeight() - mTopOffset;
-                mContent.measure(MeasureSpec.makeMeasureSpec(widthSpecSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
-                break;
-            case GRAVITY_RIGHT:
-            case GRAVITY_LEFT:
-                int width = widthSpecSize - handle.getMeasuredWidth() - mTopOffset;
-                mContent.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(heightSpecSize, MeasureSpec.EXACTLY));
-                break;
-            default:
-                break;
+        if (mVertical) {
+            int height = heightSpecSize - handle.getMeasuredHeight() - mTopOffset;
+            mContent.measure(MeasureSpec.makeMeasureSpec(widthSpecSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        } else {
+            int width = widthSpecSize - handle.getMeasuredWidth() - mTopOffset;
+            mContent.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(heightSpecSize, MeasureSpec.EXACTLY));
         }
-//        if (mVertical) {
-//            int height = heightSpecSize - handle.getMeasuredHeight() - mTopOffset;
-//            mContent.measure(MeasureSpec.makeMeasureSpec(widthSpecSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
-//        } else {
-//            int width = widthSpecSize - handle.getMeasuredWidth() - mTopOffset;
-//            mContent.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(heightSpecSize, MeasureSpec.EXACTLY));
-//        }
 
         setMeasuredDimension(widthSpecSize, heightSpecSize);
     }
@@ -325,62 +300,29 @@ public class SlidingDrawer extends ViewGroup {
     protected void dispatchDraw(Canvas canvas) {
         final long drawingTime = getDrawingTime();
         final View handle = mHandle;
-//        final boolean isVertical = mVertical;
-        final int gravity = mGravity;
+        final boolean isVertical = mVertical;
 
         drawChild(canvas, handle, drawingTime);
 
         if (mTracking || mAnimating) {
             final Bitmap cache = mContent.getDrawingCache();
             if (cache != null) {
-                switch (gravity) {
-                    case GRAVITY_BOTTOM:
-                        canvas.drawBitmap(cache, 0, handle.getBottom(), null);
-                        break;
-                    case GRAVITY_TOP:
+                if (isVertical) {
+                    if (mInvert) {
                         canvas.drawBitmap(cache, 0, handle.getTop() - (getBottom() - getTop()) + mHandleHeight, null);
-                        break;
-                    case GRAVITY_RIGHT:
-                        canvas.drawBitmap(cache,  handle.getRight(), 0, null);
-                        break;
-                    case GRAVITY_LEFT:
-                        canvas.drawBitmap(cache, handle.getLeft() - cache.getWidth(), 0, null);
-                        break;
-                    default:
-                        break;
+                    } else {
+                        canvas.drawBitmap(cache, 0, handle.getBottom(), null);
+                    }
+                } else {
+                    canvas.drawBitmap(cache, mInvert ? handle.getLeft() - cache.getWidth() : handle.getRight(), 0, null);
                 }
-//                if (isVertical) {
-//                    if (mInvert) {
-//                        canvas.drawBitmap(cache, 0, handle.getTop() - (getBottom() - getTop()) + mHandleHeight, null);
-//                    } else {
-//                        canvas.drawBitmap(cache, 0, handle.getBottom(), null);
-//                    }
-//                } else {
-//                    canvas.drawBitmap(cache, mInvert ? handle.getLeft() - cache.getWidth() : handle.getRight(), 0, null);
-//                }
             } else {
                 canvas.save();
-                switch (gravity) {
-                    case GRAVITY_BOTTOM:
-                        canvas.translate( handle.getLeft() - mTopOffset - mContent.getMeasuredWidth(), 0);
-                        break;
-                    case GRAVITY_TOP:
-                        canvas.translate(0, handle.getTop() - mTopOffset - mContent.getMeasuredHeight());
-                        break;
-                    case GRAVITY_RIGHT:
-                        canvas.translate(handle.getLeft() - mTopOffset, 0);
-                        break;
-                    case GRAVITY_LEFT:
-                        canvas.translate(0, handle.getTop() - mTopOffset);
-                        break;
-                    default:
-                        break;
+                if (mInvert) {
+                    canvas.translate(isVertical ? 0 : handle.getLeft() - mTopOffset - mContent.getMeasuredWidth(), isVertical ? handle.getTop() - mTopOffset - mContent.getMeasuredHeight() : 0);
+                } else {
+                    canvas.translate(isVertical ? 0 : handle.getLeft() - mTopOffset, isVertical ? handle.getTop() - mTopOffset : 0);
                 }
-//                if (mInvert) {
-//                    canvas.translate(isVertical ? 0 : handle.getLeft() - mTopOffset - mContent.getMeasuredWidth(), isVertical ? handle.getTop() - mTopOffset - mContent.getMeasuredHeight() : 0);
-//                } else {
-//                    canvas.translate(isVertical ? 0 : handle.getLeft() - mTopOffset, isVertical ? handle.getTop() - mTopOffset : 0);
-//                }
                 drawChild(canvas, mContent, drawingTime);
                 canvas.restore();
             }
@@ -408,57 +350,31 @@ public class SlidingDrawer extends ViewGroup {
 
         Log.d(LOG_TAG, "handleHeight: " + handleHeight);
 
-        // 默认顶部
-        int handleLeft = (width - handleWidth) / 2;
-        int handleTop = mExpanded ? height - mBottomOffset - handleHeight : mTopOffset;
+        int handleLeft;
+        int handleTop;
 
         final View content = mContent;
 
-        switch (mGravity) {
-            case GRAVITY_BOTTOM:
-                handleLeft = (width - handleWidth) / 2;
-                handleTop = mExpanded ? mTopOffset : height - handleHeight + mBottomOffset;
-                content.layout(0, mTopOffset + handleHeight, content.getMeasuredWidth(), mTopOffset + handleHeight + content.getMeasuredHeight());
-                break;
-            case GRAVITY_TOP:
-                handleLeft = (width - handleWidth) / 2;
+        if (mVertical) {
+            handleLeft = (width - handleWidth) / 2;
+            if (mInvert) {
+                Log.d(LOG_TAG, "content.layout(1)");
                 handleTop = mExpanded ? height - mBottomOffset - handleHeight : mTopOffset;
                 content.layout(0, mTopOffset, content.getMeasuredWidth(), mTopOffset + content.getMeasuredHeight());
-                break;
-            case GRAVITY_RIGHT:
-                handleTop = (height - handleHeight) / 2;
-                handleLeft = mExpanded ? mTopOffset : width - handleWidth + mBottomOffset;
-                content.layout(mTopOffset + handleWidth, 0, mTopOffset + handleWidth + content.getMeasuredWidth(), content.getMeasuredHeight());
-                break;
-            case GRAVITY_LEFT:
-                handleTop = (height - handleHeight) / 2;
+            } else {
+                handleTop = mExpanded ? mTopOffset : height - handleHeight + mBottomOffset;
+                content.layout(0, mTopOffset + handleHeight, content.getMeasuredWidth(), mTopOffset + handleHeight + content.getMeasuredHeight());
+            }
+        } else {
+            handleTop = (height - handleHeight) / 2;
+            if (mInvert) {
                 handleLeft = mExpanded ? width - mBottomOffset - handleWidth : mTopOffset;
                 content.layout(mTopOffset, 0, mTopOffset + content.getMeasuredWidth(), content.getMeasuredHeight());
-                break;
-            default:
-                break;
+            } else {
+                handleLeft = mExpanded ? mTopOffset : width - handleWidth + mBottomOffset;
+                content.layout(mTopOffset + handleWidth, 0, mTopOffset + handleWidth + content.getMeasuredWidth(), content.getMeasuredHeight());
+            }
         }
-
-//        if (mVertical) {
-//            handleLeft = (width - handleWidth) / 2;
-//            if (mInvert) {
-//                Log.d(LOG_TAG, "content.layout(1)");
-//                handleTop = mExpanded ? height - mBottomOffset - handleHeight : mTopOffset;
-//                content.layout(0, mTopOffset, content.getMeasuredWidth(), mTopOffset + content.getMeasuredHeight());
-//            } else {
-//                handleTop = mExpanded ? mTopOffset : height - handleHeight + mBottomOffset;
-//                content.layout(0, mTopOffset + handleHeight, content.getMeasuredWidth(), mTopOffset + handleHeight + content.getMeasuredHeight());
-//            }
-//        } else {
-//            handleTop = (height - handleHeight) / 2;
-//            if (mInvert) {
-//                handleLeft = mExpanded ? width - mBottomOffset - handleWidth : mTopOffset;
-//                content.layout(mTopOffset, 0, mTopOffset + content.getMeasuredWidth(), content.getMeasuredHeight());
-//            } else {
-//                handleLeft = mExpanded ? mTopOffset : width - handleWidth + mBottomOffset;
-//                content.layout(mTopOffset + handleWidth, 0, mTopOffset + handleWidth + content.getMeasuredWidth(), content.getMeasuredHeight());
-//            }
-//        }
 
         handle.layout(handleLeft, handleTop, handleLeft + handleWidth, handleTop + handleHeight);
         mHandleHeight = handle.getHeight();
@@ -496,32 +412,15 @@ public class SlidingDrawer extends ViewGroup {
                 mOnDrawerScrollListener.onScrollStarted();
             }
 
-            switch (mGravity) {
-                case GRAVITY_BOTTOM:
-                case GRAVITY_TOP:
-                    final int top = mHandle.getTop();
-                    mTouchDelta = (int) y - top;
-                    prepareTracking(top);
-                    break;
-                case GRAVITY_RIGHT:
-                case GRAVITY_LEFT:
-                    final int left = mHandle.getLeft();
-                    mTouchDelta = (int) x - left;
-                    prepareTracking(left);
-                    break;
-                default:
-                    break;
+            if (mVertical) {
+                final int top = mHandle.getTop();
+                mTouchDelta = (int) y - top;
+                prepareTracking(top);
+            } else {
+                final int left = mHandle.getLeft();
+                mTouchDelta = (int) x - left;
+                prepareTracking(left);
             }
-
-//            if (mVertical) {
-//                final int top = mHandle.getTop();
-//                mTouchDelta = (int) y - top;
-//                prepareTracking(top);
-//            } else {
-//                final int left = mHandle.getLeft();
-//                mTouchDelta = (int) x - left;
-//                prepareTracking(left);
-//            }
             mVelocityTracker.addMovement(event);
         }
 
@@ -539,18 +438,7 @@ public class SlidingDrawer extends ViewGroup {
             final int action = event.getAction();
             switch (action) {
                 case MotionEvent.ACTION_MOVE:
-                    switch (mGravity) {
-                        case GRAVITY_BOTTOM:
-                        case GRAVITY_TOP:
-                            moveHandle((int) event.getY() - mTouchDelta);
-                            break;
-                        case GRAVITY_RIGHT:
-                        case GRAVITY_LEFT:
-                            moveHandle((int) event.getX() - mTouchDelta);
-                            break;
-                        default:
-                            break;
-                    }
+                    moveHandle((int) (mVertical ? event.getY() : event.getX()) - mTouchDelta);
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL: {
@@ -559,48 +447,27 @@ public class SlidingDrawer extends ViewGroup {
 
                     float yVelocity = velocityTracker.getYVelocity();
                     float xVelocity = velocityTracker.getXVelocity();
-                    boolean negative = false;
+                    boolean negative;
 
-                    final int gravity = mGravity;
-                    switch (gravity) {
-                        case GRAVITY_BOTTOM:
-                            negative = yVelocity < 0;
-                            if (xVelocity < 0) {
-                                xVelocity = -xVelocity;
-                            }
-                            if(xVelocity > mMaximumMinorVelocity) {
-                                xVelocity = mMaximumMinorVelocity;
-                            }
-                            break;
-                        case GRAVITY_TOP:
-                            negative = yVelocity < 0;
-                            if (xVelocity < 0) {
-                                xVelocity = -xVelocity;
-                            }
-                            if(xVelocity < mMaximumMinorVelocity) {
-                                xVelocity = mMaximumMinorVelocity;
-                            }
-                            break;
-                        case GRAVITY_RIGHT:
-                            negative = xVelocity < 0;
-                            if (yVelocity < 0) {
-                                yVelocity = -yVelocity;
-                            }
-                            if (yVelocity > mMaximumMinorVelocity) {
-                                yVelocity = mMaximumMinorVelocity;
-                            }
-                            break;
-                        case GRAVITY_LEFT:
-                            negative = xVelocity < 0;
-                            if (yVelocity < 0) {
-                                yVelocity = -yVelocity;
-                            }
-                            if (yVelocity < mMaximumMinorVelocity) {
-                                yVelocity = mMaximumMinorVelocity;
-                            }
-                            break;
-                        default:
-                            break;
+                    final boolean vertical = mVertical;
+                    if (vertical) {
+                        negative = yVelocity < 0;
+                        if (xVelocity < 0) {
+                            xVelocity = -xVelocity;
+                        }
+                        // fix by Maciej Ciemięga.
+                        if ((!mInvert && xVelocity > mMaximumMinorVelocity) || (mInvert && xVelocity < mMaximumMinorVelocity)) {
+                            xVelocity = mMaximumMinorVelocity;
+                        }
+                    } else {
+                        negative = xVelocity < 0;
+                        if (yVelocity < 0) {
+                            yVelocity = -yVelocity;
+                        }
+                        // fix by Maciej Ciemięga.
+                        if ((!mInvert && yVelocity > mMaximumMinorVelocity) || (mInvert && yVelocity < mMaximumMinorVelocity)) {
+                            yVelocity = mMaximumMinorVelocity;
+                        }
                     }
 
                     float velocity = (float) Math.hypot(xVelocity, yVelocity);
@@ -614,81 +481,43 @@ public class SlidingDrawer extends ViewGroup {
                     final int handleRight = mHandle.getRight();
 
                     if (Math.abs(velocity) < mMaximumTapVelocity) {
-                        boolean c1 = (mExpanded && (getBottom() - handleBottom) < mTapThreshold + mBottomOffset);
-                        boolean c2 = (!mExpanded && handleTop < mTopOffset + mHandleHeight - mTapThreshold);
-                        boolean c3 = (mExpanded && (getRight() - handleRight) < mTapThreshold + mBottomOffset);
-                        boolean c4 = (!mExpanded && handleLeft > mTopOffset + mHandleWidth + mTapThreshold);
-                        switch (mGravity) {
-                            case GRAVITY_BOTTOM:
-                            case GRAVITY_LEFT:
-                                c1 = (mExpanded && handleTop < mTapThreshold + mTopOffset);
-                                c2 = (!mExpanded && handleTop > mBottomOffset + getBottom() - getTop() - mHandleHeight - mTapThreshold);
-                                c3 = (mExpanded && handleLeft < mTapThreshold + mTopOffset);
-                                c4 = (!mExpanded && handleLeft > mBottomOffset + getRight() - getLeft() - mHandleWidth - mTapThreshold);
-                                break;
-                            case GRAVITY_RIGHT:
-                            case GRAVITY_TOP:
-                                c1 = (mExpanded && (getBottom() - handleBottom) < mTapThreshold + mBottomOffset);
-                                c2 = (!mExpanded && handleTop < mTopOffset + mHandleHeight - mTapThreshold);
-                                c3 = (mExpanded && (getRight() - handleRight) < mTapThreshold + mBottomOffset);
-                                c4 = (!mExpanded && handleLeft > mTopOffset + mHandleWidth + mTapThreshold);
-                                break;
-                            default:
-                                break;
+                        boolean c1;
+                        boolean c2;
+                        boolean c3;
+                        boolean c4;
+
+                        if (mInvert) {
+                            c1 = (mExpanded && (getBottom() - handleBottom) < mTapThreshold + mBottomOffset);
+                            c2 = (!mExpanded && handleTop < mTopOffset + mHandleHeight - mTapThreshold);
+                            c3 = (mExpanded && (getRight() - handleRight) < mTapThreshold + mBottomOffset);
+                            c4 = (!mExpanded && handleLeft > mTopOffset + mHandleWidth + mTapThreshold);
+                        } else {
+                            c1 = (mExpanded && handleTop < mTapThreshold + mTopOffset);
+                            c2 = (!mExpanded && handleTop > mBottomOffset + getBottom() - getTop() - mHandleHeight - mTapThreshold);
+                            c3 = (mExpanded && handleLeft < mTapThreshold + mTopOffset);
+                            c4 = (!mExpanded && handleLeft > mBottomOffset + getRight() - getLeft() - mHandleWidth - mTapThreshold);
                         }
-                        switch (mGravity) {
-                            case GRAVITY_BOTTOM:
-                            case GRAVITY_TOP:
-                                if(c1 || c2) {
-                                    if (mAllowSingleTap) {
-                                        playSoundEffect(SoundEffectConstants.CLICK);
 
-                                        if (mExpanded) {
-                                            animateClose(handleTop);
-                                        } else {
-                                            animateOpen(handleTop);
-                                        }
-                                    } else {
-                                        performFling(handleTop, velocity, false);
-                                    }
-                                } else {
-                                    performFling(handleTop, velocity, false);
-                                }
-                                break;
-                            case GRAVITY_LEFT:
-                            case GRAVITY_RIGHT:
-                                if(c3 || c4) {
-                                    if (mAllowSingleTap) {
-                                        playSoundEffect(SoundEffectConstants.CLICK);
+                        Log.d(LOG_TAG, "ACTION_UP: " + "c1: " + c1 + ", c2: " + c2 + ", c3: " + c3 + ", c4: " + c4);
 
-                                        if (mExpanded) {
-                                            animateClose(handleLeft);
-                                        } else {
-                                            animateOpen(handleLeft);
-                                        }
-                                    } else {
-                                        performFling(handleLeft, velocity, false);
-                                    }
+                        if (vertical ? c1 || c2 : c3 || c4) {
+
+                            if (mAllowSingleTap) {
+                                playSoundEffect(SoundEffectConstants.CLICK);
+
+                                if (mExpanded) {
+                                    animateClose(vertical ? handleTop : handleLeft);
                                 } else {
-                                    performFling(handleLeft, velocity, false);
+                                    animateOpen(vertical ? handleTop : handleLeft);
                                 }
-                                break;
-                            default:
-                                break;
+                            } else {
+                                performFling(vertical ? handleTop : handleLeft, velocity, false);
+                            }
+                        } else {
+                            performFling(vertical ? handleTop : handleLeft, velocity, false);
                         }
                     } else {
-                        switch (mGravity) {
-                            case GRAVITY_BOTTOM:
-                            case GRAVITY_TOP:
-                                performFling(handleTop, velocity, false);
-                                break;
-                            case GRAVITY_LEFT:
-                            case GRAVITY_RIGHT:
-                                performFling(handleLeft, velocity, false);
-                                break;
-                            default:
-                                break;
-                        }
+                        performFling(vertical ? handleTop : handleLeft, velocity, false);
                     }
                 }
                 break;
@@ -996,23 +825,9 @@ public class SlidingDrawer extends ViewGroup {
         float t = (now - mAnimationLastTime) / 1000.0f; // ms -> s
         final float position = mAnimationPosition;
         final float v = mAnimatedVelocity; // px/s
-//        float a = mAnimatedAcceleration; // px/s/s
-//        switch (mGravity) {
-//            case GRAVITY_LEFT:
-//            case GRAVITY_TOP:
-//                a = mAnimatedAcceleration; // px/s/s
-//                break;
-//            case GRAVITY_BOTTOM:
-//            case GRAVITY_RIGHT:
-//                a = mAnimatedAcceleration; // px/s/s
-//                break;
-//            default:
-//                break;
-//        }
-//        mAnimationPosition = position + (v * t) + (0.5f * a * t * t); // px
-//        mAnimatedVelocity = v + (a * t); // px/s
-        mAnimationPosition = position + (v * t) + (0.5f * mAnimatedAcceleration * t * t); // px
-        mAnimatedVelocity = v + (mAnimatedAcceleration * t); // px/s
+        final float a = mInvert ? mAnimatedAcceleration : mAnimatedAcceleration; // px/s/s
+        mAnimationPosition = position + (v * t) + (0.5f * a * t * t); // px
+        mAnimatedVelocity = v + (a * t); // px/s
         mAnimationLastTime = now; // ms
     }
 
@@ -1095,18 +910,7 @@ public class SlidingDrawer extends ViewGroup {
         if (scrollListener != null) {
             scrollListener.onScrollStarted();
         }
-        switch (mGravity) {
-            case GRAVITY_BOTTOM:
-            case GRAVITY_TOP:
-                animateClose(mHandle.getTop());
-                break;
-            case GRAVITY_LEFT:
-            case GRAVITY_RIGHT:
-                animateClose(mHandle.getLeft());
-                break;
-            default:
-                break;
-        }
+        animateClose(mVertical ? mHandle.getTop() : mHandle.getLeft());
 
         if (scrollListener != null) {
             scrollListener.onScrollEnded();
@@ -1128,18 +932,7 @@ public class SlidingDrawer extends ViewGroup {
         if (scrollListener != null) {
             scrollListener.onScrollStarted();
         }
-        switch (mGravity) {
-            case GRAVITY_BOTTOM:
-            case GRAVITY_TOP:
-                animateOpen(mHandle.getTop());
-                break;
-            case GRAVITY_LEFT:
-            case GRAVITY_RIGHT:
-                animateOpen(mHandle.getLeft());
-                break;
-            default:
-                break;
-        }
+        animateOpen(mVertical ? mHandle.getTop() : mHandle.getLeft());
 
         sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
 

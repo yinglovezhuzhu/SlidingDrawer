@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Standard orientation constant. -->
-    <attr name="orientation">
-        <!-- Defines an horizontal widget. -->
-        <enum name="horizontal" value="0" />
-        <!-- Defines a vertical widget. -->
-        <enum name="vertical" value="1" />
-        <enum name="horizontal2" value="2" />
-        <enum name="vertical2" value="3" />
-    </attr>
 
+    <!-- Standard gravity constant. -->
     <attr name="gravity">
+        <!-- Defines an horizontal widget. sliding from right.-->
         <enum name="right" value="0" />
+        <!-- Defines an vertical widget. sliding from bottom.-->
         <enum name="bottom" value="1" />
+        <!-- Defines an horizontal widget. sliding from left.-->
         <enum name="left" value="2" />
+        <!-- Defines an vertical widget. sliding from top.-->
         <enum name="top" value="3" />
     </attr>
 
