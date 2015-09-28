@@ -20,9 +20,6 @@
         <attr name="handle" format="reference" />
         <!-- Identifier for the child that represents the drawer's content. -->
         <attr name="content" format="reference" />
-        <!-- Orientation of the SlidingDrawer. -->
-        <attr name="orientation" />
-
         <attr name="gravity" />
         <!-- Extra offset for the handle at the bottom of the SlidingDrawer. -->
         <attr name="bottomOffset" format="dimension"  />

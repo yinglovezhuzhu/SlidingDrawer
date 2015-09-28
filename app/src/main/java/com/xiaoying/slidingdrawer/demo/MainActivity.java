@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import com.xiaoying.widget.SlidingDrawer;
 
 public class MainActivity extends Activity {
 
@@ -15,37 +12,37 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.sliding_drawer);
-        slidingDrawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
-            @Override
-            public void onDrawerOpened()
-            {
-                Toast.makeText(getApplicationContext(),"OnDrawerOpened",Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        slidingDrawer.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
-
-            @Override
-            public void onDrawerClosed() {
-                Toast.makeText(getApplicationContext(), "onDrawerClosed", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        slidingDrawer.setOnDrawerScrollListener(new SlidingDrawer.OnDrawerScrollListener() {
-
-            @Override
-            public void onScrollEnded() {
-                Toast.makeText(getApplicationContext(), "onScrollEnded", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onScrollStarted() {
-                Toast.makeText(getApplicationContext(), "onScrollStarted", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.sliding_drawer);
+//        slidingDrawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
+//            @Override
+//            public void onDrawerOpened()
+//            {
+//                Toast.makeText(getApplicationContext(),"OnDrawerOpened",Toast.LENGTH_SHORT).show();
+//            }
+//
+//        });
+//
+//        slidingDrawer.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
+//
+//            @Override
+//            public void onDrawerClosed() {
+//                Toast.makeText(getApplicationContext(), "onDrawerClosed", Toast.LENGTH_SHORT).show();
+//            }
+//
+//        });
+//
+//        slidingDrawer.setOnDrawerScrollListener(new SlidingDrawer.OnDrawerScrollListener() {
+//
+//            @Override
+//            public void onScrollEnded() {
+//                Toast.makeText(getApplicationContext(), "onScrollEnded", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onScrollStarted() {
+//                Toast.makeText(getApplicationContext(), "onScrollStarted", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
     }
 

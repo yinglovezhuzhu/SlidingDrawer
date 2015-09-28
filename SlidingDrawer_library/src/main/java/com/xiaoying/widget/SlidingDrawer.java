@@ -214,7 +214,7 @@ public class SlidingDrawer extends ViewGroup {
         mTopOffset = (int) a.getDimension(R.styleable.SlidingDrawer_topOffset, 0.0f);
         mAllowSingleTap = a.getBoolean(R.styleable.SlidingDrawer_allowSingleTap, true);
         mAnimateOnClick = a.getBoolean(R.styleable.SlidingDrawer_animateOnClick, true);
-//        mInvert = (orientation == ORIENTATION_TTB || orientation == ORIENTATION_LTR);
+        mInvert = (GRAVITY_RIGHT == gravity || GRAVITY_LEFT == gravity);
 
         int handleId = a.getResourceId(R.styleable.SlidingDrawer_handle, 0);
         if (handleId == 0) {
