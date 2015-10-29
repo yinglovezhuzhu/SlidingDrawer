@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.xiaoying.widget;
+package com.opensource.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,7 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.xiaoying.slidingdrawer.R;
+import com.opensource.slidingdrawer.R;
 
 /**
  * SlidingDrawer hides content out of the screen and allows the user to drag a handle

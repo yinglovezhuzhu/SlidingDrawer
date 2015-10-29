@@ -10,7 +10,7 @@
         android:scaleType="centerCrop"
         android:src="@mipmap/img"/>
 
-    <com.xiaoying.widget.SlidingDrawer
+    <com.opensource.widget.SlidingDrawer
         android:id="@+id/sliding_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,6 +30,6 @@
             android:scaleType="centerCrop"
             android:src="@mipmap/img2"
             android:contentDescription="@string/app_name" />
-    </com.xiaoying.widget.SlidingDrawer>
+    </com.opensource.widget.SlidingDrawer>
 
 </RelativeLayout>

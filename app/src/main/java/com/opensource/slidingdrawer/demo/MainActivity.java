@@ -1,4 +1,4 @@
-package com.xiaoying.slidingdrawer.demo;
+package com.opensource.slidingdrawer.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
