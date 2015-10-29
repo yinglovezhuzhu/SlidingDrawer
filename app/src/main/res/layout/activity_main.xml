@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         sliding:allowSingleTap="false"
-        sliding:gravity="left"
+        sliding:gravity="right"
         sliding:handle="@+id/handle"
         sliding:content="@+id/content">
         <ImageView
