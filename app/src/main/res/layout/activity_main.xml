@@ -15,14 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         sliding:allowSingleTap="false"
-        sliding:gravity="top"
+        sliding:gravity="left"
         sliding:handle="@+id/handle"
         sliding:content="@+id/content">
         <ImageView
             android:id="@+id/handle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="50dp"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:contentDescription="@string/app_name" />
         <ImageView
             android:id="@+id/content"
